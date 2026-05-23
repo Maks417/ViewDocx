@@ -1,6 +1,57 @@
-node_modules
-dist
-src-tauri/target
-.DS_Store
+# --- Node / Vite ---
+node_modules/
+dist/
+dist-ssr/
+*.local
+.vite/
+.cache/
+
+# --- TypeScript ---
+*.tsbuildinfo
+
+# --- Rust / Tauri ---
+src-tauri/target/
+src-tauri/WixTools/
+src-tauri/gen/schemas/
+src-tauri/gen/android/
+src-tauri/gen/apple/
+**/*.rs.bk
+
+# --- Secrets / signing keys (NEVER commit) ---
+.env
+.env.local
+.env.*.local
+.tauri/
+*.tauri-signing-key
+tauri-signing-key*.txt
+*.pem
+*.key
+*.pfx
+*.p12
+*.p8
+
+# --- Logs ---
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# --- Editor / OS ---
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.code-workspace
+.vs/
+*.suo
+*.user
+*.swp
+*.swo
+*~
+
+# --- Project-specific working files ---
 app-icon.png
