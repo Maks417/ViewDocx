@@ -1,6 +1,6 @@
 [package]
 name = "docview"
-version = "0.1.0"
+version = "1.0.0"
 description = "Compact DOCX document viewer"
 authors = ["you"]
 edition = "2021"
