@@ -1,7 +1,9 @@
+use crate::cache::DocumentCache;
 use crate::recent::RecentStore;
 use serde::Serialize;
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
+use tauri::ipc::Response;
 use tauri::{AppHandle, State};
 use thiserror::Error;
 
@@ -55,11 +57,36 @@ pub fn detect_kind(bytes: &[u8]) -> DocumentKind {
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct DocumentPayload {
-    pub bytes: Vec<u8>,
+pub struct DocumentInfo {
     pub kind: DocumentKind,
     pub path: String,
     pub name: String,
+}
+
+fn read_and_validate(path: &str) -> Result<(PathBuf, Vec<u8>, DocumentKind), AppError> {
+    let path_buf = PathBuf::from(path);
+    if !path_buf.is_file() {
+        return Err(AppError::NotFound(path.to_string()));
+    }
+
+    let bytes = fs::read(&path_buf)?;
+    if bytes.is_empty() {
+        return Err(AppError::Empty);
+    }
+
+    let kind = detect_kind(&bytes);
+    if kind == DocumentKind::Unknown {
+        return Err(AppError::UnsupportedFormat);
+    }
+
+    Ok((path_buf, bytes, kind))
+}
+
+fn document_name(path_buf: &Path) -> String {
+    path_buf
+        .file_name()
+        .map(|n| n.to_string_lossy().into_owned())
+        .unwrap_or_else(|| path_buf.to_string_lossy().into_owned())
 }
 
 #[tauri::command]
@@ -73,12 +100,9 @@ pub async fn open_file_dialog(app: AppHandle) -> Result<Option<FileHandle>, AppE
         .blocking_pick_file();
 
     Ok(path.map(|p| {
-        let path_buf = p.into_path().map(PathBuf::from).unwrap_or_default();
+        let path_buf = p.into_path().unwrap_or_default();
         let path_str = path_buf.to_string_lossy().into_owned();
-        let name = path_buf
-            .file_name()
-            .map(|n| n.to_string_lossy().into_owned())
-            .unwrap_or_else(|| path_str.clone());
+        let name = document_name(&path_buf);
         FileHandle {
             path: path_str,
             name,
@@ -90,46 +114,38 @@ pub async fn open_file_dialog(app: AppHandle) -> Result<Option<FileHandle>, AppE
 pub async fn read_document(
     path: String,
     store: State<'_, RecentStore>,
-) -> Result<DocumentPayload, AppError> {
-    let path_buf = PathBuf::from(&path);
-    if !path_buf.is_file() {
-        return Err(AppError::NotFound(path));
-    }
-
-    let bytes = fs::read(&path_buf)?;
-    if bytes.is_empty() {
-        return Err(AppError::Empty);
-    }
-
-    let kind = detect_kind(&bytes);
-    if kind == DocumentKind::Unknown {
-        return Err(AppError::UnsupportedFormat);
-    }
-
-    let name = path_buf
-        .file_name()
-        .map(|n| n.to_string_lossy().into_owned())
-        .unwrap_or_else(|| path_buf.to_string_lossy().into_owned());
+    cache: State<'_, DocumentCache>,
+) -> Result<DocumentInfo, AppError> {
+    let (path_buf, bytes, kind) = read_and_validate(&path)?;
+    let name = document_name(&path_buf);
+    let path_str = path_buf.to_string_lossy().into_owned();
 
     store.add(&path_buf)?;
+    cache.store(path_str.clone(), bytes);
 
-    Ok(DocumentPayload {
-        bytes,
+    Ok(DocumentInfo {
         kind,
-        path: path_buf.to_string_lossy().into_owned(),
+        path: path_str,
         name,
     })
 }
 
 #[tauri::command]
-pub fn recent_files(store: State<'_, RecentStore>) -> Result<Vec<String>, AppError> {
-    Ok(store.list())
+pub async fn read_document_bytes(
+    path: String,
+    cache: State<'_, DocumentCache>,
+) -> Result<Response, AppError> {
+    if let Some(bytes) = cache.take(&path) {
+        return Ok(Response::new(bytes));
+    }
+
+    let (_, bytes, _) = read_and_validate(&path)?;
+    Ok(Response::new(bytes))
 }
 
 #[tauri::command]
-pub fn add_recent_file(path: String, store: State<'_, RecentStore>) -> Result<(), AppError> {
-    store.add(&PathBuf::from(path))?;
-    Ok(())
+pub fn recent_files(store: State<'_, RecentStore>) -> Result<Vec<String>, AppError> {
+    Ok(store.list())
 }
 
 #[tauri::command]

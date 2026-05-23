@@ -1,0 +1,10 @@
+[[permission]]
+identifier = "allow-app-commands"
+description = "Allow DocView document and recent-file commands."
+commands.allow = [
+  "open_file_dialog",
+  "read_document",
+  "read_document_bytes",
+  "recent_files",
+  "clear_recent_files",
+]

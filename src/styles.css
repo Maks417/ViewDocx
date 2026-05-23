@@ -66,11 +66,6 @@ body {
   cursor: pointer;
 }
 
-.toolbar button:hover:not(:disabled) {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
 .toolbar button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -80,6 +75,11 @@ body {
   background: var(--accent);
   border-color: var(--accent);
   color: #fff;
+}
+
+.toolbar button:hover:not(:disabled):not(.primary) {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .toolbar button.primary:hover:not(:disabled) {

@@ -1,6 +1,6 @@
-import { renderAsync } from "docx-preview";
+import type { DocumentKind } from "./detect";
 
-export type DocumentKind = "docx" | "legacydoc" | "unknown";
+export type { DocumentKind };
 
 export interface LoadedDocument {
   bytes: Uint8Array;
@@ -76,11 +76,10 @@ export class DocumentViewer {
       doc.bytes.byteOffset + doc.bytes.byteLength,
     ) as ArrayBuffer;
 
+    const { renderAsync } = await import("docx-preview");
+
     await renderAsync(buffer, this.container, this.styleContainer, {
       className: "docx",
-      inWrapper: true,
-      ignoreWidth: false,
-      ignoreHeight: false,
       breakPages: true,
       renderHeaders: true,
       renderFooters: true,

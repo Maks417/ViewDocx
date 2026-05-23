@@ -4,7 +4,9 @@
   "description": "Default capabilities for DocView",
   "windows": ["main"],
   "permissions": [
-    "core:default",
-    "dialog:default"
+    "core:event:default",
+    "core:webview:default",
+    "dialog:default",
+    "allow-app-commands"
   ]
 }

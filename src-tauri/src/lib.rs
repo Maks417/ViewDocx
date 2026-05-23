@@ -1,7 +1,11 @@
+mod cache;
 mod commands;
 mod recent;
 
-use commands::{open_file_dialog, read_document, recent_files, add_recent_file, clear_recent_files};
+use cache::DocumentCache;
+use commands::{
+    clear_recent_files, open_file_dialog, read_document, read_document_bytes, recent_files,
+};
 use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -11,11 +15,12 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             open_file_dialog,
             read_document,
+            read_document_bytes,
             recent_files,
-            add_recent_file,
             clear_recent_files,
         ])
         .setup(|app| {
+            app.manage(DocumentCache::new());
             let store = recent::RecentStore::new(app.handle())?;
             app.manage(store);
 

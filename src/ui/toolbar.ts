@@ -1,3 +1,5 @@
+import { btn, el } from "../dom";
+
 export interface ToolbarCallbacks {
   onOpen: () => void;
   onPrint: () => void;
@@ -13,31 +15,12 @@ export interface ToolbarElements {
   zoomLabel: HTMLElement;
   printBtn: HTMLButtonElement;
   recentDropdown: HTMLElement;
-  recentToggle: HTMLButtonElement;
 }
 
 export function createToolbar(callbacks: ToolbarCallbacks): ToolbarElements {
-  const root = document.createElement("header");
-  root.className = "toolbar";
+  const recentDropdown = el("div", { className: "recent-dropdown" });
 
-  const openBtn = document.createElement("button");
-  openBtn.type = "button";
-  openBtn.className = "primary";
-  openBtn.textContent = "Open";
-  openBtn.title = "Open document (Ctrl+O)";
-  openBtn.addEventListener("click", () => callbacks.onOpen());
-
-  const recentMenu = document.createElement("div");
-  recentMenu.className = "recent-menu";
-
-  const recentToggle = document.createElement("button");
-  recentToggle.type = "button";
-  recentToggle.textContent = "Recent";
-  recentToggle.title = "Recently opened files";
-
-  const recentDropdown = document.createElement("div");
-  recentDropdown.className = "recent-dropdown";
-
+  const recentToggle = btn("Recent", { title: "Recently opened files" });
   recentToggle.addEventListener("click", (e) => {
     e.stopPropagation();
     recentDropdown.classList.toggle("open");
@@ -47,57 +30,26 @@ export function createToolbar(callbacks: ToolbarCallbacks): ToolbarElements {
     recentDropdown.classList.remove("open");
   });
 
-  recentMenu.append(recentToggle, recentDropdown);
+  const recentMenu = el("div", { className: "recent-menu" }, [recentToggle, recentDropdown]);
+  const zoomLabel = el("span", { className: "zoom-label", textContent: "100%" });
+  const printBtn = btn("Print", { title: "Print (Ctrl+P)", disabled: true }, callbacks.onPrint);
 
-  const zoomOutBtn = document.createElement("button");
-  zoomOutBtn.type = "button";
-  zoomOutBtn.textContent = "−";
-  zoomOutBtn.title = "Zoom out (Ctrl+-)";
-  zoomOutBtn.addEventListener("click", () => callbacks.onZoomOut());
-
-  const zoomLabel = document.createElement("span");
-  zoomLabel.className = "zoom-label";
-  zoomLabel.textContent = "100%";
-
-  const zoomInBtn = document.createElement("button");
-  zoomInBtn.type = "button";
-  zoomInBtn.textContent = "+";
-  zoomInBtn.title = "Zoom in (Ctrl++)";
-  zoomInBtn.addEventListener("click", () => callbacks.onZoomIn());
-
-  const zoomResetBtn = document.createElement("button");
-  zoomResetBtn.type = "button";
-  zoomResetBtn.textContent = "Reset";
-  zoomResetBtn.title = "Reset zoom (Ctrl+0)";
-  zoomResetBtn.addEventListener("click", () => callbacks.onZoomReset());
-
-  const spacer = document.createElement("div");
-  spacer.className = "spacer";
-
-  const printBtn = document.createElement("button");
-  printBtn.type = "button";
-  printBtn.textContent = "Print";
-  printBtn.title = "Print (Ctrl+P)";
-  printBtn.disabled = true;
-  printBtn.addEventListener("click", () => callbacks.onPrint());
-
-  root.append(
-    openBtn,
+  const root = el("header", { className: "toolbar" }, [
+    btn("Open", { className: "primary", title: "Open document (Ctrl+O)" }, callbacks.onOpen),
     recentMenu,
-    zoomOutBtn,
+    btn("−", { title: "Zoom out (Ctrl+-)" }, callbacks.onZoomOut),
     zoomLabel,
-    zoomInBtn,
-    zoomResetBtn,
-    spacer,
+    btn("+", { title: "Zoom in (Ctrl++)" }, callbacks.onZoomIn),
+    btn("Reset", { title: "Reset zoom (Ctrl+0)" }, callbacks.onZoomReset),
+    el("div", { className: "spacer" }),
     printBtn,
-  );
+  ]);
 
   return {
     root,
     zoomLabel,
     printBtn,
     recentDropdown,
-    recentToggle,
   };
 }
 
@@ -110,18 +62,12 @@ export function renderRecentList(
   dropdown.replaceChildren();
 
   if (paths.length === 0) {
-    const empty = document.createElement("div");
-    empty.className = "empty";
-    empty.textContent = "No recent files";
-    dropdown.append(empty);
+    dropdown.append(el("div", { className: "empty", textContent: "No recent files" }));
     return;
   }
 
   for (const path of paths) {
-    const item = document.createElement("button");
-    item.type = "button";
-    item.textContent = path;
-    item.title = path;
+    const item = btn(path, { title: path });
     item.addEventListener("click", (e) => {
       e.stopPropagation();
       dropdown.classList.remove("open");
@@ -130,9 +76,7 @@ export function renderRecentList(
     dropdown.append(item);
   }
 
-  const clearBtn = document.createElement("button");
-  clearBtn.type = "button";
-  clearBtn.textContent = "Clear recent";
+  const clearBtn = btn("Clear recent");
   clearBtn.style.borderTop = "1px solid var(--border)";
   clearBtn.addEventListener("click", (e) => {
     e.stopPropagation();

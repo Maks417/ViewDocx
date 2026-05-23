@@ -1,42 +1,28 @@
+import { el } from "../dom";
+
 export interface DropzoneElements {
   root: HTMLElement;
 }
 
-export function createDropzone(onFiles: (files: FileList) => void): DropzoneElements {
-  const root = document.createElement("div");
-  root.className = "dropzone";
+export interface DropzoneCallbacks {
+  onDragEnter?: () => void;
+  onDragLeave?: () => void;
+}
 
-  const title = document.createElement("h2");
-  title.textContent = "Open a Word document";
+export function createDropzone(callbacks: DropzoneCallbacks = {}): DropzoneElements {
+  const root = el("div", { className: "dropzone" }, [
+    el("h2", { textContent: "Open a Word document" }),
+    el("p", { textContent: "Drag and drop a .docx file here, or use Open (Ctrl+O)" }),
+  ]);
 
-  const hint = document.createElement("p");
-  hint.textContent = "Drag and drop a .docx file here, or use Open (Ctrl+O)";
-
-  root.append(title, hint);
-
-  const prevent = (e: DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  root.addEventListener("dragenter", (e) => {
-    prevent(e);
+  root.addEventListener("dragenter", () => {
     root.classList.add("drag-over");
+    callbacks.onDragEnter?.();
   });
 
-  root.addEventListener("dragover", prevent);
-
-  root.addEventListener("dragleave", (e) => {
-    prevent(e);
+  root.addEventListener("dragleave", () => {
     root.classList.remove("drag-over");
-  });
-
-  root.addEventListener("drop", (e) => {
-    prevent(e);
-    root.classList.remove("drag-over");
-    if (e.dataTransfer?.files?.length) {
-      onFiles(e.dataTransfer.files);
-    }
+    callbacks.onDragLeave?.();
   });
 
   return { root };
@@ -44,4 +30,8 @@ export function createDropzone(onFiles: (files: FileList) => void): DropzoneElem
 
 export function setDropzoneVisible(dropzone: HTMLElement, visible: boolean): void {
   dropzone.classList.toggle("hidden", !visible);
+}
+
+export function setDropzoneDragOver(dropzone: HTMLElement, active: boolean): void {
+  dropzone.classList.toggle("drag-over", active);
 }
