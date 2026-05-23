@@ -110,7 +110,7 @@ class App {
       if (err instanceof LegacyDocError) {
         this.showDialog(
           "Legacy .doc not supported yet",
-          `"${err.fileName}" uses the older Word 97–2003 format. DocView currently supports .docx only. Future versions may convert .doc via LibreOffice when installed.`,
+          `"${err.fileName}" uses the older Word 97–2003 format. ViewDocx currently supports .docx only.`,
         );
         this.setStatus(`Unsupported: ${err.fileName}`);
         return;

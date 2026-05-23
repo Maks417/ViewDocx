@@ -45,7 +45,7 @@ pub fn run() {
                             app,
                             "Help",
                             true,
-                            &[&MenuItem::with_id(app, "about", "About DocView", true, None::<&str>)?],
+                            &[&MenuItem::with_id(app, "about", "About ViewDocx", true, None::<&str>)?],
                         )?,
                     ],
                 )?;

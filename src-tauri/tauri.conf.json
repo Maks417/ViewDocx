@@ -1,6 +1,6 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
-  "productName": "DocView",
+  "productName": "ViewDocx",
   "version": "0.1.0",
   "identifier": "com.docview.desktop",
   "build": {
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "DocView",
+        "title": "ViewDocx",
         "width": 1100,
         "height": 800,
         "minWidth": 640,

@@ -43,8 +43,6 @@ pub enum DocumentKind {
     Unknown,
 }
 
-// TODO: convert_legacy_doc — probe soffice (LibreOffice) or antiword when .doc support is added.
-
 pub fn detect_kind(bytes: &[u8]) -> DocumentKind {
     if bytes.len() >= 4 && bytes[0..4] == [0x50, 0x4B, 0x03, 0x04] {
         return DocumentKind::Docx;
