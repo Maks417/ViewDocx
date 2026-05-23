@@ -12,16 +12,21 @@ export interface LoadedDocument {
 const MIN_ZOOM = 0.5;
 const MAX_ZOOM = 2.5;
 const ZOOM_STEP = 0.1;
+const FIT_WIDTH_PADDING = 48;
 
 export class DocumentViewer {
   private readonly container: HTMLElement;
   private readonly styleContainer: HTMLElement;
   private readonly stage: HTMLElement;
+  private readonly stageWrap: HTMLElement;
+  private readonly scrollHost: HTMLElement;
   private zoom = 1;
 
   constructor(scrollHost: HTMLElement) {
+    this.scrollHost = scrollHost;
+
     this.container = document.createElement("div");
-    this.container.className = "docx-wrapper";
+    this.container.className = "viewer-document";
 
     this.styleContainer = document.createElement("div");
     this.styleContainer.setAttribute("aria-hidden", "true");
@@ -29,7 +34,11 @@ export class DocumentViewer {
     this.stage = document.createElement("div");
     this.stage.className = "viewer-stage";
     this.stage.append(this.styleContainer, this.container);
-    scrollHost.append(this.stage);
+
+    this.stageWrap = document.createElement("div");
+    this.stageWrap.className = "viewer-stage-wrap";
+    this.stageWrap.append(this.stage);
+    scrollHost.append(this.stageWrap);
   }
 
   getZoom(): number {
@@ -37,8 +46,10 @@ export class DocumentViewer {
   }
 
   setZoom(value: number): number {
+    const scrollRatio = this.getHorizontalScrollRatio();
     this.zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));
-    this.stage.style.transform = `scale(${this.zoom})`;
+    this.applyZoom();
+    this.restoreHorizontalScrollRatio(scrollRatio);
     return this.zoom;
   }
 
@@ -54,10 +65,56 @@ export class DocumentViewer {
     return this.setZoom(1);
   }
 
+  fitWidth(): number {
+    const page = this.getPrimaryPage();
+    const docWidth = this.getUnscaledWidth(page ?? this.container);
+    if (docWidth <= 0 || this.scrollHost.clientWidth <= FIT_WIDTH_PADDING) return this.zoom;
+
+    const viewportWidth = this.scrollHost.clientWidth - FIT_WIDTH_PADDING;
+    const target = viewportWidth / docWidth;
+    this.zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, target));
+    this.applyZoom();
+    requestAnimationFrame(() => {
+      this.scrollHost.scrollLeft = 0;
+    });
+    return this.zoom;
+  }
+
   clear(): void {
     this.container.replaceChildren();
     this.styleContainer.replaceChildren();
     this.resetZoom();
+  }
+
+  private applyZoom(): void {
+    this.stage.style.setProperty("zoom", String(this.zoom));
+  }
+
+  private getUnscaledWidth(element: HTMLElement): number {
+    const rectWidth = element.getBoundingClientRect().width;
+    return rectWidth > 0 ? rectWidth / this.zoom : element.offsetWidth;
+  }
+
+  private getPrimaryPage(): HTMLElement | null {
+    return this.container.querySelector<HTMLElement>("section.docx") ?? this.container.firstElementChild as HTMLElement | null;
+  }
+
+  private getHorizontalScrollRatio(): number {
+    const scrollable = this.scrollHost.scrollWidth - this.scrollHost.clientWidth;
+    if (scrollable <= 0) return 0;
+    return (this.scrollHost.scrollLeft + this.scrollHost.clientWidth / 2) / this.scrollHost.scrollWidth;
+  }
+
+  private restoreHorizontalScrollRatio(ratio: number): void {
+    requestAnimationFrame(() => {
+      if (ratio <= 0) {
+        this.scrollHost.scrollLeft = 0;
+        return;
+      }
+
+      const targetCenter = this.scrollHost.scrollWidth * ratio;
+      this.scrollHost.scrollLeft = Math.max(0, targetCenter - this.scrollHost.clientWidth / 2);
+    });
   }
 
   async render(doc: LoadedDocument): Promise<void> {
@@ -84,6 +141,8 @@ export class DocumentViewer {
       renderHeaders: true,
       renderFooters: true,
     });
+
+    this.applyZoom();
   }
 }
 

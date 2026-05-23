@@ -61,6 +61,9 @@ pub fn run() {
                             "print" => {
                                 let _ = window.emit("menu-print", ());
                             }
+                            "about" => {
+                                let _ = window.emit("menu-about", ());
+                            }
                             _ => {}
                         }
                     }
