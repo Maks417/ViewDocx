@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
   "productName": "ViewDocx",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "identifier": "com.docview.desktop",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -34,6 +34,26 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
+    ],
+    "fileAssociations": [
+      {
+        "ext": [
+          "docx"
+        ],
+        "name": "Word Document",
+        "description": "Microsoft Word Document",
+        "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "role": "Viewer"
+      },
+      {
+        "ext": [
+          "doc"
+        ],
+        "name": "Word 97-2003 Document",
+        "description": "Legacy Microsoft Word Document",
+        "mimeType": "application/msword",
+        "role": "Viewer"
+      }
     ],
     "windows": {
       "webviewInstallMode": {

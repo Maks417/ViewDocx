@@ -8,4 +8,5 @@ commands.allow = [
   "recent_files",
   "clear_recent_files",
   "save_as_pdf",
+  "take_pending_open_files",
 ]

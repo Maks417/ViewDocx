@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - "v*.*.*"
+      - "*.*.*"
   workflow_dispatch:
 
 permissions:
@@ -56,10 +57,11 @@ jobs:
           releaseBody: |
             ## ViewDocx ${{ github.ref_name }}
 
-            See assets below for the Windows installer.
+            ### Install
+            Download the Windows installer from the assets below:
 
-            - `*.msi` — MSI installer (for IT / silent deployment)
-            - `*-setup.exe` — NSIS installer (recommended for end users)
-          releaseDraft: true
+            - **`*-setup.exe`** — NSIS installer (recommended for end users)
+            - **`*.msi`** — MSI installer (for IT / silent deployment)
+          releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}

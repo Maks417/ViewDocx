@@ -79,9 +79,13 @@ class App {
     await listen("menu-print", () => this.printFromShortcut());
     await listen("menu-save-pdf", () => void this.saveAsPdf());
     await listen("menu-about", () => void this.showAboutDialog());
+    await listen<string>("open-file", (event) => void this.loadFromPath(event.payload));
 
     await this.refreshRecent();
-    this.setStatus("Ready — open a .docx file");
+    await this.loadPendingOpenFiles();
+    if (!this.currentPath) {
+      this.setStatus("Ready — open a .docx file");
+    }
   }
 
   private setStatus(text: string, isError = false): void {
@@ -182,6 +186,14 @@ class App {
   private async clearRecent(): Promise<void> {
     await invoke("clear_recent_files");
     await this.refreshRecent();
+  }
+
+  private async loadPendingOpenFiles(): Promise<void> {
+    const paths = await invoke<string[]>("take_pending_open_files");
+    const path = paths.find((candidate) => isWordExtension(candidate));
+    if (path) {
+      await this.loadFromPath(path);
+    }
   }
 
   private async loadFromPath(path: string): Promise<void> {

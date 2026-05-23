@@ -1,5 +1,6 @@
 mod cache;
 mod commands;
+mod open_files;
 mod pdf;
 mod recent;
 
@@ -8,6 +9,7 @@ use commands::{
     clear_recent_files, open_file_dialog, read_document, read_document_bytes, recent_files,
     save_as_pdf,
 };
+use open_files::{handle_open_files, parse_startup_args, take_pending_open_files, OpenFileQueue};
 use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -21,11 +23,19 @@ pub fn run() {
             recent_files,
             clear_recent_files,
             save_as_pdf,
+            take_pending_open_files,
         ])
         .setup(|app| {
             app.manage(DocumentCache::new());
+            app.manage(OpenFileQueue::new());
             let store = recent::RecentStore::new(app.handle())?;
             app.manage(store);
+
+            #[cfg(any(windows, target_os = "linux"))]
+            {
+                let files = parse_startup_args();
+                handle_open_files(app.handle(), files, false);
+            }
 
             #[cfg(desktop)]
             {
@@ -84,6 +94,19 @@ pub fn run() {
             }
             Ok(())
         })
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while building tauri application")
+        .run(
+            #[allow(unused_variables)]
+            |app, event| {
+                #[cfg(any(target_os = "macos", target_os = "ios", target_os = "android"))]
+                if let tauri::RunEvent::Opened { urls } = event {
+                    let files = urls
+                        .into_iter()
+                        .filter_map(|url| url.to_file_path().ok())
+                        .collect::<Vec<_>>();
+                    handle_open_files(app, files, true);
+                }
+            },
+        );
 }
