@@ -35,7 +35,6 @@ export function computeDocStats(container: HTMLElement): DocStats {
     const range = document.createRange();
     range.selectNodeContents(block);
     const rectCount = range.getClientRects().length;
-    range.detach?.();
 
     if (rectCount > 0) {
       lines += rectCount;

@@ -1,26 +1,18 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 
 use tauri::{AppHandle, Emitter, Manager, State};
 
-fn debug_log(msg: &str) {
-    if let Some(dir) = dirs_next::data_local_dir() {
-        let log_dir = dir.join("ViewDocx");
-        let _ = std::fs::create_dir_all(&log_dir);
-        let log_path = log_dir.join("startup.log");
-        use std::io::Write;
-        if let Ok(mut f) = std::fs::OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open(&log_path)
-        {
-            let ts = std::time::SystemTime::now()
-                .duration_since(std::time::UNIX_EPOCH)
-                .map(|d| d.as_secs())
-                .unwrap_or(0);
-            let _ = writeln!(f, "[{}] {}", ts, msg);
-        }
-    }
+const SUPPORTED_EXTENSIONS: &[&str] = &["docx", "doc"];
+
+fn is_supported_path(path: &Path) -> bool {
+    path.extension()
+        .and_then(|ext| ext.to_str())
+        .map(|ext| {
+            let lower = ext.to_ascii_lowercase();
+            SUPPORTED_EXTENSIONS.iter().any(|e| *e == lower)
+        })
+        .unwrap_or(false)
 }
 
 pub struct OpenFileQueue(Mutex<Vec<String>>);
@@ -52,25 +44,11 @@ pub fn take_pending_open_files(queue: State<'_, OpenFileQueue>) -> Vec<String> {
 }
 
 pub fn parse_startup_args() -> Vec<PathBuf> {
-    let args: Vec<String> = std::env::args().collect();
-    debug_log(&format!("startup argv: {:?}", args));
-
-    let mut files = Vec::new();
-
-    for maybe_file in args.into_iter().skip(1) {
-        if maybe_file.starts_with('-') {
-            continue;
-        }
-
-        if let Some(path) = parse_path_arg(&maybe_file) {
-            debug_log(&format!("parsed path: {}", path.display()));
-            files.push(path);
-        } else {
-            debug_log(&format!("skipped arg: {}", maybe_file));
-        }
-    }
-
-    files
+    std::env::args()
+        .skip(1)
+        .filter(|arg| !arg.starts_with('-'))
+        .filter_map(|arg| parse_path_arg(&arg))
+        .collect()
 }
 
 fn parse_path_arg(value: &str) -> Option<PathBuf> {
@@ -91,26 +69,16 @@ fn parse_path_arg(value: &str) -> Option<PathBuf> {
 }
 
 pub fn handle_open_files(app: &AppHandle, paths: Vec<PathBuf>, notify_frontend: bool) {
-    debug_log(&format!("handle_open_files received {} paths", paths.len()));
-
-    let paths = paths
+    let paths: Vec<PathBuf> = paths
         .into_iter()
-        .filter(|path| {
-            let exists = path.is_file();
-            if !exists {
-                debug_log(&format!("dropped non-existent path: {}", path.display()));
-            }
-            exists
-        })
-        .collect::<Vec<_>>();
+        .filter(|path| is_supported_path(path) && path.is_file())
+        .collect();
 
     if paths.is_empty() {
-        debug_log("handle_open_files: no usable paths");
         return;
     }
 
     app.state::<OpenFileQueue>().push(&paths);
-    debug_log(&format!("queued {} path(s) for frontend", paths.len()));
 
     if !notify_frontend {
         return;

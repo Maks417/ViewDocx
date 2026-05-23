@@ -93,11 +93,17 @@ fn document_name(path_buf: &Path) -> String {
 pub async fn open_file_dialog(app: AppHandle) -> Result<Option<FileHandle>, AppError> {
     use tauri_plugin_dialog::DialogExt;
 
-    let path = app
-        .dialog()
+    let (tx, rx) = tokio::sync::oneshot::channel();
+    app.dialog()
         .file()
         .add_filter("Word documents", &["docx", "doc"])
-        .blocking_pick_file();
+        .pick_file(move |path| {
+            let _ = tx.send(path);
+        });
+
+    let path = rx.await.map_err(|_| {
+        AppError::Io(std::io::Error::other("file dialog was cancelled"))
+    })?;
 
     Ok(path.map(|p| {
         let path_buf = p.into_path().unwrap_or_default();

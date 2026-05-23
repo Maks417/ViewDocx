@@ -158,7 +158,7 @@ class App {
   }
 
   private async showAboutDialog(): Promise<void> {
-    const version = await getVersion().catch(() => "0.1.0");
+    const version = await getVersion().catch(() => "unknown");
     this.showDialog(
       "About ViewDocx",
       `ViewDocx is a compact desktop viewer for Microsoft Word .docx documents.\n\nVersion ${version}`,

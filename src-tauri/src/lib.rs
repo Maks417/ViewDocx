@@ -12,6 +12,54 @@ use commands::{
 use open_files::{handle_open_files, parse_startup_args, take_pending_open_files, OpenFileQueue};
 use tauri::Manager;
 
+#[cfg(desktop)]
+const MENU_EVENT_MAP: &[(&str, &str)] = &[
+    ("open", "menu-open"),
+    ("save-pdf", "menu-save-pdf"),
+    ("print", "menu-print"),
+    ("about", "menu-about"),
+];
+
+#[cfg(desktop)]
+fn install_app_menu(app: &tauri::App) -> tauri::Result<()> {
+    use std::collections::HashMap;
+    use tauri::menu::{Menu, MenuItem, PredefinedMenuItem, Submenu};
+    use tauri::Emitter;
+
+    let open_item = MenuItem::with_id(app, "open", "Open…", true, None::<&str>)?;
+    let save_pdf_item = MenuItem::with_id(app, "save-pdf", "Save as PDF…", true, None::<&str>)?;
+    let print_item = MenuItem::with_id(app, "print", "Print", true, None::<&str>)?;
+    let about_item = MenuItem::with_id(app, "about", "About ViewDocx", true, None::<&str>)?;
+
+    let file_menu = Submenu::with_items(
+        app,
+        "File",
+        true,
+        &[
+            &open_item,
+            &PredefinedMenuItem::separator(app)?,
+            &save_pdf_item,
+            &print_item,
+        ],
+    )?;
+    let help_menu = Submenu::with_items(app, "Help", true, &[&about_item])?;
+
+    let menu = Menu::with_items(app, &[&file_menu, &help_menu])?;
+    app.set_menu(menu)?;
+
+    let lookup: HashMap<&str, &str> = MENU_EVENT_MAP.iter().copied().collect();
+    app.on_menu_event(move |app, event| {
+        let Some(event_name) = lookup.get(event.id().as_ref()) else {
+            return;
+        };
+        if let Some(window) = app.get_webview_window("main") {
+            let _ = window.emit(event_name, ());
+        }
+    });
+
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -38,60 +86,7 @@ pub fn run() {
             }
 
             #[cfg(desktop)]
-            {
-                use tauri::menu::{Menu, MenuItem, PredefinedMenuItem, Submenu};
-                use tauri::Emitter;
-
-                let open_item = MenuItem::with_id(app, "open", "Open…", true, None::<&str>)?;
-                let save_pdf_item =
-                    MenuItem::with_id(app, "save-pdf", "Save as PDF…", true, None::<&str>)?;
-                let print_item = MenuItem::with_id(app, "print", "Print", true, None::<&str>)?;
-                let file_menu = Submenu::with_items(
-                    app,
-                    "File",
-                    true,
-                    &[
-                        &open_item,
-                        &PredefinedMenuItem::separator(app)?,
-                        &save_pdf_item,
-                        &print_item,
-                    ],
-                )?;
-                let menu = Menu::with_items(
-                    app,
-                    &[
-                        &file_menu,
-                        &Submenu::with_items(
-                            app,
-                            "Help",
-                            true,
-                            &[&MenuItem::with_id(app, "about", "About ViewDocx", true, None::<&str>)?],
-                        )?,
-                    ],
-                )?;
-                app.set_menu(menu)?;
-
-                app.on_menu_event(|app, event| {
-                    let id = event.id().as_ref();
-                    if let Some(window) = app.get_webview_window("main") {
-                        match id {
-                            "open" => {
-                                let _ = window.emit("menu-open", ());
-                            }
-                            "save-pdf" => {
-                                let _ = window.emit("menu-save-pdf", ());
-                            }
-                            "print" => {
-                                let _ = window.emit("menu-print", ());
-                            }
-                            "about" => {
-                                let _ = window.emit("menu-about", ());
-                            }
-                            _ => {}
-                        }
-                    }
-                });
-            }
+            install_app_menu(app)?;
             Ok(())
         })
         .build(tauri::generate_context!())
