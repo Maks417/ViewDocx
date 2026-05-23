@@ -7,4 +7,5 @@ commands.allow = [
   "read_document_bytes",
   "recent_files",
   "clear_recent_files",
+  "save_as_pdf",
 ]

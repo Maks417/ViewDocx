@@ -45,6 +45,10 @@ export class DocumentViewer {
     return this.zoom;
   }
 
+  getContainer(): HTMLElement {
+    return this.container;
+  }
+
   setZoom(value: number): number {
     const scrollRatio = this.getHorizontalScrollRatio();
     this.zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));

@@ -1,10 +1,12 @@
 mod cache;
 mod commands;
+mod pdf;
 mod recent;
 
 use cache::DocumentCache;
 use commands::{
     clear_recent_files, open_file_dialog, read_document, read_document_bytes, recent_files,
+    save_as_pdf,
 };
 use tauri::Manager;
 
@@ -18,6 +20,7 @@ pub fn run() {
             read_document_bytes,
             recent_files,
             clear_recent_files,
+            save_as_pdf,
         ])
         .setup(|app| {
             app.manage(DocumentCache::new());
@@ -30,12 +33,19 @@ pub fn run() {
                 use tauri::Emitter;
 
                 let open_item = MenuItem::with_id(app, "open", "Open…", true, None::<&str>)?;
+                let save_pdf_item =
+                    MenuItem::with_id(app, "save-pdf", "Save as PDF…", true, None::<&str>)?;
                 let print_item = MenuItem::with_id(app, "print", "Print", true, None::<&str>)?;
                 let file_menu = Submenu::with_items(
                     app,
                     "File",
                     true,
-                    &[&open_item, &PredefinedMenuItem::separator(app)?, &print_item],
+                    &[
+                        &open_item,
+                        &PredefinedMenuItem::separator(app)?,
+                        &save_pdf_item,
+                        &print_item,
+                    ],
                 )?;
                 let menu = Menu::with_items(
                     app,
@@ -57,6 +67,9 @@ pub fn run() {
                         match id {
                             "open" => {
                                 let _ = window.emit("menu-open", ());
+                            }
+                            "save-pdf" => {
+                                let _ = window.emit("menu-save-pdf", ());
                             }
                             "print" => {
                                 let _ = window.emit("menu-print", ());

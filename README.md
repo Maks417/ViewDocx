@@ -6,7 +6,8 @@ Compact desktop viewer for Microsoft Word `.docx` documents. Built with [Tauri 2
 
 - Open `.docx` via file dialog, drag-and-drop, or recent files list
 - Rich layout rendering (tables, images, page breaks, headers/footers)
-- Zoom and print (native WebView print / PDF)
+- Zoom and print
+- Save as PDF — vector, selectable-text export via WebView2 `PrintToPdf` (no print dialog)
 - Legacy `.doc` detection with a clear “not supported yet” message
 - Small installer (~5–10 MB) — no bundled browser runtime
 

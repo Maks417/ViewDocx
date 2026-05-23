@@ -17,6 +17,8 @@ pub enum AppError {
     UnsupportedFormat,
     #[error("file is empty")]
     Empty,
+    #[error("{0}")]
+    PdfFailed(String),
 }
 
 impl Serialize for AppError {
@@ -150,4 +152,11 @@ pub fn recent_files(store: State<'_, RecentStore>) -> Result<Vec<String>, AppErr
 pub fn clear_recent_files(store: State<'_, RecentStore>) -> Result<(), AppError> {
     store.clear()?;
     Ok(())
+}
+
+#[tauri::command]
+pub async fn save_as_pdf(window: tauri::WebviewWindow, path: String) -> Result<(), AppError> {
+    crate::pdf::print_to_pdf(window, path)
+        .await
+        .map_err(AppError::PdfFailed)
 }

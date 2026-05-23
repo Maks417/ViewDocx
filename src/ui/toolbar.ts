@@ -4,6 +4,7 @@ import { icon, iconBtn } from "./icons";
 export interface ToolbarCallbacks {
   onOpen: () => void;
   onPrint: () => void;
+  onSaveAsPdf: () => void;
   onZoomIn: () => void;
   onZoomOut: () => void;
   onZoomReset: () => void;
@@ -16,6 +17,7 @@ export interface ToolbarElements {
   root: HTMLElement;
   zoomLabel: HTMLElement;
   printBtn: HTMLButtonElement;
+  saveAsPdfBtn: HTMLButtonElement;
   openBtn: HTMLButtonElement;
   recentToggle: HTMLButtonElement;
   recentDropdown: HTMLElement;
@@ -89,6 +91,13 @@ export function createToolbar(callbacks: ToolbarCallbacks): ToolbarElements {
     onClick: callbacks.onOpen,
   });
 
+  const saveAsPdfBtn = iconBtn("savePdf", {
+    label: "Save as PDF",
+    iconOnly: true,
+    props: { title: "Save as PDF (Ctrl+Shift+S)", disabled: true },
+    onClick: callbacks.onSaveAsPdf,
+  });
+
   const printBtn = iconBtn("print", {
     label: "Print",
     iconOnly: true,
@@ -133,7 +142,7 @@ export function createToolbar(callbacks: ToolbarCallbacks): ToolbarElements {
     fitWidthBtn,
   ]);
 
-  const printGroup = el("div", { className: "toolbar-group" }, [printBtn]);
+  const printGroup = el("div", { className: "toolbar-group" }, [saveAsPdfBtn, printBtn]);
 
   const root = el("header", { className: "toolbar glass" }, [
     fileGroup,
@@ -142,14 +151,25 @@ export function createToolbar(callbacks: ToolbarCallbacks): ToolbarElements {
     printGroup,
   ]);
 
-  const interactive = [openBtn, recentToggle, zoomOutBtn, zoomInBtn, zoomResetBtn, fitWidthBtn, printBtn];
+  const interactive = [
+    openBtn,
+    recentToggle,
+    zoomOutBtn,
+    zoomInBtn,
+    zoomResetBtn,
+    fitWidthBtn,
+    saveAsPdfBtn,
+    printBtn,
+  ];
+
+  const docDependent = new Set<HTMLButtonElement>([saveAsPdfBtn, printBtn]);
 
   const setDisabled = (disabled: boolean): void => {
     for (const control of interactive) {
-      if (control === printBtn) {
+      if (docDependent.has(control)) {
         if (disabled) {
           control.disabled = true;
-        } else if (printBtn.dataset.loaded === "true") {
+        } else if (control.dataset.loaded === "true") {
           control.disabled = false;
         }
       } else {
@@ -162,6 +182,7 @@ export function createToolbar(callbacks: ToolbarCallbacks): ToolbarElements {
     root,
     zoomLabel,
     printBtn,
+    saveAsPdfBtn,
     openBtn,
     recentToggle,
     recentDropdown,

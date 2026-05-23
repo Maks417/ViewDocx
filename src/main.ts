@@ -2,6 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { getVersion } from "@tauri-apps/api/app";
+import { save as saveFileDialog } from "@tauri-apps/plugin-dialog";
 import { isWordExtension } from "./detect";
 import { btn, el } from "./dom";
 import {
@@ -11,6 +12,7 @@ import {
 } from "./ui/dropzone";
 import { createToolbar, renderRecentList, type ToolbarElements } from "./ui/toolbar";
 import { icon } from "./ui/icons";
+import { computeDocStats, formatBytes, formatCount } from "./stats";
 import { DocumentViewer, LegacyDocError, type DocumentKind, type LoadedDocument } from "./viewer";
 
 interface FileHandle {
@@ -29,6 +31,8 @@ class App {
   private toolbar!: ToolbarElements;
   private viewer!: DocumentViewer;
   private statusBar!: HTMLElement;
+  private statusPath!: HTMLElement;
+  private statusStats!: HTMLElement;
   private dropzoneEl!: HTMLElement;
   private scrollHost!: HTMLElement;
   private loadingOverlay!: HTMLElement;
@@ -38,10 +42,18 @@ class App {
   private dialogBackdrop!: HTMLElement;
   private dialogOkBtn!: HTMLButtonElement;
   private currentPath: string | null = null;
+  private currentName: string | null = null;
   private loading = false;
+  private savingPdf = false;
+  private statusFlashTimer: number | null = null;
 
   async init(): Promise<void> {
-    this.statusBar = el("footer", { className: "status-bar glass", textContent: "Ready" });
+    this.statusPath = el("span", { className: "status-path" });
+    this.statusStats = el("span", { className: "status-stats" });
+    this.statusBar = el("footer", { className: "status-bar glass" }, [
+      this.statusPath,
+      this.statusStats,
+    ]);
     this.scrollHost = el("div", { className: "viewer-scroll" });
     this.loadingOverlay = el("div", { className: "viewer-loading" }, [
       el("div", { className: "viewer-loading-inner glass" }, [
@@ -65,6 +77,7 @@ class App {
 
     await listen("menu-open", () => void this.openFileDialog());
     await listen("menu-print", () => this.printFromShortcut());
+    await listen("menu-save-pdf", () => void this.saveAsPdf());
     await listen("menu-about", () => void this.showAboutDialog());
 
     await this.refreshRecent();
@@ -72,8 +85,44 @@ class App {
   }
 
   private setStatus(text: string, isError = false): void {
-    this.statusBar.textContent = text;
+    this.cancelStatusFlash();
+    this.statusPath.textContent = text;
     this.statusBar.classList.toggle("status-error", isError);
+    this.setStatusStats("");
+  }
+
+  private setStatusStats(text: string): void {
+    this.statusStats.textContent = text;
+  }
+
+  private cancelStatusFlash(): void {
+    if (this.statusFlashTimer !== null) {
+      window.clearTimeout(this.statusFlashTimer);
+      this.statusFlashTimer = null;
+    }
+  }
+
+  private flashStatus(text: string, durationMs = 4000): void {
+    this.cancelStatusFlash();
+    const previousPath = this.statusPath.textContent ?? "";
+    const previousError = this.statusBar.classList.contains("status-error");
+    this.statusPath.textContent = text;
+    this.statusBar.classList.remove("status-error");
+    this.statusFlashTimer = window.setTimeout(() => {
+      this.statusFlashTimer = null;
+      this.statusPath.textContent = previousPath;
+      this.statusBar.classList.toggle("status-error", previousError);
+    }, durationMs);
+  }
+
+  private updateDocStats(byteLength: number): void {
+    const sizeText = formatBytes(byteLength);
+    requestAnimationFrame(() => {
+      const { lines, words } = computeDocStats(this.viewer.getContainer());
+      this.setStatusStats(
+        `${sizeText} · ${formatCount(lines)} lines · ${formatCount(words)} words`,
+      );
+    });
   }
 
   private setLoading(loading: boolean): void {
@@ -159,11 +208,15 @@ class App {
     try {
       await this.viewer.render(doc);
       this.currentPath = doc.path;
+      this.currentName = doc.name;
       this.toolbar.printBtn.disabled = false;
       this.toolbar.printBtn.dataset.loaded = "true";
+      this.toolbar.saveAsPdfBtn.disabled = false;
+      this.toolbar.saveAsPdfBtn.dataset.loaded = "true";
       this.setViewerVisible(true);
       this.updateDocContext(info);
       this.setStatus(doc.path);
+      this.updateDocStats(doc.bytes.byteLength);
       this.updateZoomLabel();
       await this.refreshRecent();
     } catch (err) {
@@ -186,6 +239,10 @@ class App {
       this.updateDocContext(null);
       this.toolbar.printBtn.disabled = true;
       delete this.toolbar.printBtn.dataset.loaded;
+      this.toolbar.saveAsPdfBtn.disabled = true;
+      delete this.toolbar.saveAsPdfBtn.dataset.loaded;
+      this.currentName = null;
+      this.setStatusStats("");
     }
   }
 
@@ -200,6 +257,45 @@ class App {
   private printFromShortcut(): void {
     if (!this.currentPath) return;
     window.print();
+  }
+
+  private suggestedPdfName(): string {
+    const base = this.currentName ?? "document";
+    return base.replace(/\.docx?$/i, "") + ".pdf";
+  }
+
+  private async saveAsPdf(): Promise<void> {
+    if (this.loading || this.savingPdf || !this.currentPath) return;
+
+    let target: string | null = null;
+    try {
+      target = await saveFileDialog({
+        defaultPath: this.suggestedPdfName(),
+        filters: [{ name: "PDF document", extensions: ["pdf"] }],
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      this.showDialog("Could not open save dialog", message);
+      return;
+    }
+
+    if (!target) return;
+
+    this.savingPdf = true;
+    this.toolbar.saveAsPdfBtn.disabled = true;
+
+    try {
+      await invoke("save_as_pdf", { path: target });
+      this.flashStatus(`Saved PDF to ${target}`);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      this.showDialog("Could not save PDF", message);
+    } finally {
+      this.savingPdf = false;
+      if (this.toolbar.saveAsPdfBtn.dataset.loaded === "true" && !this.loading) {
+        this.toolbar.saveAsPdfBtn.disabled = false;
+      }
+    }
   }
 
   private async setupDragDrop(): Promise<void> {
@@ -238,6 +334,9 @@ class App {
         if (key === "o") {
           e.preventDefault();
           void this.openFileDialog();
+        } else if (key === "s" && e.shiftKey) {
+          e.preventDefault();
+          void this.saveAsPdf();
         } else if (key === "p") {
           e.preventDefault();
           this.printFromShortcut();
@@ -264,6 +363,7 @@ class App {
     this.toolbar = createToolbar({
       onOpen: () => void this.openFileDialog(),
       onPrint: () => this.printFromShortcut(),
+      onSaveAsPdf: () => void this.saveAsPdf(),
       onZoomIn: () => {
         this.viewer.zoomIn();
         this.updateZoomLabel();
