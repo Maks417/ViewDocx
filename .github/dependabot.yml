@@ -7,6 +7,10 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    ignore:
+      # Vite 8 is a major bundler change; stay on Vite 6 until upgraded deliberately.
+      - dependency-name: vite
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: cargo
     directory: /src-tauri
@@ -17,3 +21,8 @@ updates:
       # RUSTSEC-2024-0429: glib 0.18.x via Tauri’s Linux GTK stack (gtk 0.18).
       # Patched in glib >= 0.20, which gtk 0.18 cannot use. ViewDocx ships Windows only.
       - dependency-name: glib
+      # webview2-com 0.39+ requires windows 0.62; wry 0.55 still pins webview2-com 0.38.
+      - dependency-name: webview2-com
+        versions: [">= 0.39"]
+      - dependency-name: windows
+        versions: [">= 0.62"]
