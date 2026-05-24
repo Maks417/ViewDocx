@@ -1,0 +1,19 @@
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: cargo
+    directory: /src-tauri
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    ignore:
+      # RUSTSEC-2024-0429: glib 0.18.x via Tauri’s Linux GTK stack (gtk 0.18).
+      # Patched in glib >= 0.20, which gtk 0.18 cannot use. ViewDocx ships Windows only.
+      - dependency-name: glib
