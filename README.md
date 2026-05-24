@@ -1,5 +1,10 @@
 # ViewDocx
 
+[![Build](https://github.com/Maks417/ViewDocx/actions/workflows/build.yml/badge.svg)](https://github.com/Maks417/ViewDocx/actions/workflows/build.yml)
+[![Latest release](https://img.shields.io/github/v/release/Maks417/ViewDocx)](https://github.com/Maks417/ViewDocx/releases)
+[![License: MIT](https://img.shields.io/github/license/Maks417/ViewDocx)](LICENSE)
+![Platform](https://img.shields.io/badge/platform-Windows%2010%2B-blue)
+
 A small Windows desktop app for opening and viewing Microsoft Word `.docx` files — without installing Microsoft Office.
 
 Built with [Tauri 2](https://v2.tauri.app) and [docx-preview](https://github.com/VolodymyrBaydalka/docxjs) (Apache-2.0).
@@ -59,6 +64,12 @@ The installer is about 5–10 MB. On first install it may download the [WebView2
 ---
 
 ## For contributors
+
+![Tauri](https://img.shields.io/badge/Tauri-2-24C8DB?logo=tauri&logoColor=white)
+![Rust](https://img.shields.io/badge/Rust-stable-orange?logo=rust&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite&logoColor=white)
+![WebView2](https://img.shields.io/badge/WebView2-required-0078D4?logo=microsoftedge&logoColor=white)
 
 ### Prerequisites
 

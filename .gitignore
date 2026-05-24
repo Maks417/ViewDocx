@@ -55,3 +55,7 @@ Desktop.ini
 
 # --- Project-specific working files ---
 app-icon.png
+
+# AI
+CLAUDE.md
+.cursor/
