@@ -1,0 +1,5 @@
+# ViewDocx ships Windows only. glib enters Cargo.lock via Tauri's Linux
+# WebKit/GTK stack (tauri-runtime-wry → webkit2gtk → gtk → glib) but is not
+# compiled or linked into Windows release builds.
+[advisories]
+ignore = ["RUSTSEC-2024-0429"]
