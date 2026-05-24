@@ -2,7 +2,8 @@
 name = "docview"
 version = "1.0.3"
 description = "Compact DOCX document viewer"
-authors = ["you"]
+authors = ["Max Davydov"]
+license = "MIT"
 edition = "2021"
 
 [lib]

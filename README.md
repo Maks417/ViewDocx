@@ -1,67 +1,133 @@
 # ViewDocx
 
-Compact desktop viewer for Microsoft Word `.docx` documents. Built with [Tauri 2](https://v2.tauri.app) (Rust + system WebView) and [docx-preview](https://github.com/VolodymyrBaydalka/docxjs) (Apache-2.0).
+A small Windows desktop app for opening and viewing Microsoft Word `.docx` files — without installing Microsoft Office.
+
+Built with [Tauri 2](https://v2.tauri.app) and [docx-preview](https://github.com/VolodymyrBaydalka/docxjs) (Apache-2.0).
+
+## Download
+
+**[Releases](https://github.com/Maks417/ViewDocx/releases)** — pick the latest version and download one of:
+
+| File | Who it's for |
+|------|----------------|
+| `*-setup.exe` | Most people — run the installer and follow the prompts |
+| `*.msi` | IT departments — silent or managed deployment |
+
+The installer is about 5–10 MB. On first install it may download the [WebView2](https://developer.microsoft.com/microsoft-edge/webview2/) runtime if your PC does not already have it (internet required once).
+
+**Windows SmartScreen:** the app is not code-signed yet. Windows may show “Unknown publisher” on first run. Choose **More info → Run anyway** to continue.
 
 ## Features
 
-- Open `.docx` via file dialog, drag-and-drop, or recent files list
-- Rich layout rendering (tables, images, page breaks, headers/footers)
-- Zoom and print
-- Save as PDF — vector, selectable-text export via WebView2 `PrintToPdf` (no print dialog)
-- Legacy `.doc` detection with a clear “not supported yet” message
-- Small installer (~5–10 MB) — no bundled browser runtime
+- Open `.docx` from the toolbar, drag-and-drop, double-click (file association), or the **Recent** list (up to 10 files)
+- Layout rendering for tables, images, page breaks, headers, and footers
+- Zoom (including fit width), print, and **Save as PDF** (vector export with selectable text — no print dialog)
+- Status bar with file path and document stats
+- Small footprint — uses the system WebView instead of bundling a full browser
 
-## Prerequisites
+## Using ViewDocx
 
-- [Node.js](https://nodejs.org/) 18+
-- [Rust](https://rustup.rs/)
-- Windows: [WebView2](https://developer.microsoft.com/microsoft-edge/webview2/) (preinstalled on Windows 11; bootstrapper included in installer)
+1. Install from a release (see above), or build from source (contributors).
+2. Open a document:
+   - **Open** on the toolbar, or **Ctrl+O**
+   - Drag a `.docx` onto the window
+   - Double-click a `.docx` in File Explorer (after install)
+   - Pick a file from **Recent** (clock icon)
+3. Use the toolbar for zoom, print, and PDF export.
 
-## Development
+### Keyboard shortcuts
+
+| Action | Shortcut |
+|--------|----------|
+| Open | Ctrl+O |
+| Save as PDF | Ctrl+Shift+S |
+| Print | Ctrl+P |
+| Zoom in | Ctrl++ |
+| Zoom out | Ctrl+- |
+| Actual size (100%) | Ctrl+0 |
+
+## Requirements and limitations
+
+| | |
+|---|---|
+| **OS** | Windows 10 or later (64-bit). macOS and Linux builds are not shipped yet. |
+| **Runtime** | [WebView2](https://developer.microsoft.com/microsoft-edge/webview2/) — included on Windows 11; installed by the setup program on older systems when needed. |
+| **Formats** | `.docx` only. Legacy `.doc` files are detected and reported as unsupported. |
+| **Save as PDF** | Windows only (uses WebView2 `PrintToPdf`). |
+| **Editing** | View-only — this is a reader, not a Word replacement. |
+
+---
+
+## For contributors
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) 18+ (22 used in CI)
+- [Rust](https://rustup.rs/) (stable)
+- Windows with WebView2 for local runs (same as end users)
+
+On Windows, install [Visual Studio Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) with the **Desktop development with C++** workload if `tauri build` fails to find a linker.
+
+### Development
 
 ```bash
+git clone https://github.com/Maks417/ViewDocx.git
+cd ViewDocx
 npm install
 npm run tauri dev
 ```
 
-## Release (Windows)
+Frontend-only work (no Rust changes):
 
-Build artifacts are written to `src-tauri/target/release/bundle/`.
+```bash
+npm run dev          # Vite on http://localhost:1420
+```
 
-### Local / direct distribution
+### Repository layout
 
-Small installer (~5–10 MB). Downloads the WebView2 bootstrapper at install time if needed (requires internet on first install).
+| Path | Purpose |
+|------|---------|
+| `src/` | TypeScript UI (toolbar, viewer, drag-and-drop) |
+| `src-tauri/` | Rust backend, Tauri config, bundling |
+| `.github/workflows/` | CI build on push/PR; release on version tags |
+
+### Build installers locally
+
+Artifacts are written to `src-tauri/target/release/bundle/`.
 
 ```bash
 npm run build:installer
 ```
 
-| Output | Typical use |
-|--------|-------------|
-| `nsis/*-setup.exe` | End users — double-click installer |
-| `msi/*.msi` | IT / silent deployment |
+| Output | Use |
+|--------|-----|
+| `nsis/*-setup.exe` | End-user installer (downloads WebView2 bootstrapper when needed) |
+| `msi/*.msi` | MSI for IT / silent install |
 
-Share the `.exe` or `.msi` via your website, GitHub Releases, etc. Without a code-signing certificate, Windows SmartScreen will show an "Unknown publisher" warning on first install — users can click **More info → Run anyway**.
+**Microsoft Store:** not configured yet (requires a code-signing certificate). [`src-tauri/tauri.microsoftstore.conf.json`](src-tauri/tauri.microsoftstore.conf.json) and `npm run build:store` are kept for a possible future submission — see [Tauri — Microsoft Store](https://v2.tauri.app/distribute/microsoft-store/).
 
-> **Microsoft Store:** publishing to the Store requires a code-signing certificate (Microsoft policy), so it's not currently set up. The config file [`src-tauri/tauri.microsoftstore.conf.json`](src-tauri/tauri.microsoftstore.conf.json) and `npm run build:store` script are left in place for a future Store submission. See [Tauri — Microsoft Store](https://v2.tauri.app/distribute/microsoft-store/) when ready.
+### Releases and CI
 
-### Cutting a GitHub Release
+- **[`build.yml`](.github/workflows/build.yml)** — builds on every push and pull request to `main` / `master`; uploads Windows installers as workflow artifacts.
+- **[`release.yml`](.github/workflows/release.yml)** — runs when a version tag is pushed; builds Windows installers and [publishes a GitHub Release](https://github.com/Maks417/ViewDocx/releases) with assets attached.
 
-Releases are fully automated by [`.github/workflows/release.yml`](.github/workflows/release.yml) (uses [`tauri-apps/tauri-action`](https://github.com/tauri-apps/tauri-action)). Pushing a `v*.*.*` tag triggers a Windows build and creates a **draft** GitHub Release with `.msi` and `-setup.exe` attached.
+**Cutting a release** (maintainers):
 
 ```bash
-npm run release:bump 0.2.0          # syncs package.json, tauri.conf.json, Cargo.toml
-git commit -am "Release v0.2.0"
-git tag v0.2.0
-git push && git push --tags
+npm run release:bump -- 1.0.4    # syncs package.json, tauri.conf.json, Cargo.toml
+git add -A
+git commit -m "Release v1.0.4"
+git tag v1.0.4
+git push
+git push origin v1.0.4
 ```
 
-Then go to the repo's **Releases** page, review the draft, edit notes, and click **Publish release**. Set `releaseDraft: false` in the workflow to publish automatically.
+Accepted tag forms: `v1.0.4` or `1.0.4` (see the workflow `on.push.tags` list).
 
-The matrix in the release workflow has commented stubs for macOS and Linux — uncomment to include those installers in the same release.
+To also ship macOS or Linux installers, uncomment the extra matrix rows in `release.yml` (and the matching jobs in `build.yml`).
 
-CI also builds on every push; see [`.github/workflows/build.yml`](.github/workflows/build.yml).
+Release notes and assets are defined in the workflow (`releaseBody`, `releaseDraft: false`). Edit [`.github/workflows/release.yml`](.github/workflows/release.yml) to change the default release text or switch to draft releases.
 
-## License
+### License
 
-Application code: MIT. Dependencies use permissive licenses (MIT / Apache-2.0).
+Application code is under the [MIT License](LICENSE). Third-party dependencies use permissive licenses (MIT / Apache-2.0).
