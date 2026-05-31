@@ -26,19 +26,26 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="site-header">
+  <header class="site-header" id="top">
     <div class="container">
-      <a class="brand" href="#">
+      <a class="brand" href="#top">
         <img src="assets/icon.png" alt="ViewDocx icon" width="32" height="32">
         ViewDocx
       </a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-label="Toggle navigation menu">
+      <label for="nav-toggle" class="nav-toggle-btn" aria-label="Toggle navigation menu">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </label>
       <nav class="site-nav" aria-label="Main">
         <a href="#features">Features</a>
         <a href="#install">Install</a>
+        <a href="#requirements">Requirements</a>
         <a href="#developers">Developers</a>
         <a href="https://github.com/Maks417/ViewDocx">GitHub</a>
+        <a class="btn btn-primary nav-download" href="https://github.com/Maks417/ViewDocx/releases/latest">Download</a>
       </nav>
-      <a class="btn btn-primary" href="https://github.com/Maks417/ViewDocx/releases/latest">Download</a>
     </div>
   </header>
 
@@ -66,7 +73,7 @@
             <a class="btn btn-primary" href="https://github.com/Maks417/ViewDocx/releases/latest">Download for Windows</a>
             <a class="btn btn-secondary" href="https://github.com/Maks417/ViewDocx">View on GitHub</a>
           </div>
-          <p class="hero-note">Free and open source · ~5–10 MB installer · MIT License</p>
+          <p class="hero-note">Free and open source · installer under 10 MB · MIT License</p>
         </div>
 
         <div class="hero-visual">
@@ -150,7 +157,7 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
             </div>
             <h3>Zoom &amp; print</h3>
-            <p>Zoom in and out (including fit width), print documents, and export to PDF with selectable text.</p>
+            <p>Zoom in and out, fit to width, and send documents straight to your printer.</p>
           </article>
           <article class="feature-card glass">
             <div class="feature-icon">
@@ -171,7 +178,7 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
             </div>
             <h3>Small footprint</h3>
-            <p>Uses the system WebView2 instead of bundling a full browser — installer is only 5–10 MB.</p>
+            <p>Uses the system WebView2 instead of bundling a full browser — the installer stays under 10 MB.</p>
           </article>
         </div>
       </div>
@@ -189,7 +196,7 @@
             <ol>
               <li>Download the latest release from GitHub.</li>
               <li>Run <strong>*-setup.exe</strong> for a guided installer, or <strong>*.msi</strong> for IT-managed deployment.</li>
-              <li>Open a document via the toolbar, drag-and-drop, double-click in Explorer, or the Recent list.</li>
+              <li>Open your first document — or just double-click any .docx file in Explorer.</li>
             </ol>
             <div class="callout">
               <strong>Windows SmartScreen:</strong> The app is not code-signed yet. If Windows shows "Unknown publisher", choose <strong>More info → Run anyway</strong>.
