@@ -9,6 +9,8 @@ A small Windows desktop app for opening and viewing Microsoft Word `.docx` files
 
 Built with [Tauri 2](https://v2.tauri.app) and [docx-preview](https://github.com/VolodymyrBaydalka/docxjs) (Apache-2.0).
 
+**Website:** [maks417.github.io/ViewDocx](https://maks417.github.io/ViewDocx/)
+
 ## Download
 
 **[Releases](https://github.com/Maks417/ViewDocx/releases)** — pick the latest version and download one of:

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ViewDocx — Open and view Word .docx files on Windows</title>
+  <meta name="description" content="A lightweight Windows desktop app for opening and viewing Microsoft Word .docx files — no Microsoft Office required. Built with Tauri 2.">
+  <link rel="canonical" href="https://maks417.github.io/ViewDocx/">
+  <meta name="theme-color" content="#2563eb">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://maks417.github.io/ViewDocx/">
+  <meta property="og:title" content="ViewDocx — Open and view Word .docx files on Windows">
+  <meta property="og:description" content="A lightweight Windows desktop app for opening and viewing Microsoft Word .docx files — no Microsoft Office required.">
+  <meta property="og:image" content="https://maks417.github.io/ViewDocx/assets/icon.png">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="ViewDocx — Open and view Word .docx files on Windows">
+  <meta name="twitter:description" content="A lightweight Windows desktop app for opening and viewing Microsoft Word .docx files — no Microsoft Office required.">
+  <meta name="twitter:image" content="https://maks417.github.io/ViewDocx/assets/icon.png">
+
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/icon.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="#">
+        <img src="assets/icon.png" alt="ViewDocx icon" width="32" height="32">
+        ViewDocx
+      </a>
+      <nav class="site-nav" aria-label="Main">
+        <a href="#features">Features</a>
+        <a href="#install">Install</a>
+        <a href="#developers">Developers</a>
+        <a href="https://github.com/Maks417/ViewDocx">GitHub</a>
+      </nav>
+      <a class="btn btn-primary" href="https://github.com/Maks417/ViewDocx/releases/latest">Download</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-content">
+          <h1>Open and view Word .docx files on Windows</h1>
+          <p class="hero-tagline">
+            A small, fast desktop app for reading Microsoft Word documents — without installing Microsoft Office.
+          </p>
+          <div class="hero-badges">
+            <a href="https://github.com/Maks417/ViewDocx/actions/workflows/build.yml">
+              <img src="https://img.shields.io/github/actions/workflow/status/Maks417/ViewDocx/build.yml?branch=master&label=build" alt="Build status">
+            </a>
+            <a href="https://github.com/Maks417/ViewDocx/releases">
+              <img src="https://img.shields.io/github/v/release/Maks417/ViewDocx" alt="Latest release">
+            </a>
+            <a href="https://github.com/Maks417/ViewDocx/blob/master/LICENSE">
+              <img src="https://img.shields.io/github/license/Maks417/ViewDocx" alt="MIT License">
+            </a>
+            <img src="https://img.shields.io/badge/platform-Windows%2010%2B-blue" alt="Windows 10+">
+          </div>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="https://github.com/Maks417/ViewDocx/releases/latest">Download for Windows</a>
+            <a class="btn btn-secondary" href="https://github.com/Maks417/ViewDocx">View on GitHub</a>
+          </div>
+          <p class="hero-note">Free and open source · ~5–10 MB installer · MIT License</p>
+        </div>
+
+        <div class="hero-visual">
+          <div class="app-mockup" role="img" aria-label="ViewDocx application window showing a document with toolbar, zoom controls, and status bar">
+            <div class="mockup-titlebar">
+              <div class="mockup-dots" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </div>
+              <span class="mockup-title">ViewDocx</span>
+            </div>
+            <div class="mockup-toolbar" aria-hidden="true">
+              <div class="mockup-toolbar-group">
+                <span class="mockup-btn primary">Open</span>
+              </div>
+              <div class="mockup-toolbar-group">
+                <span class="mockup-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
+              </div>
+              <div class="mockup-toolbar-group">
+                <span class="mockup-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg></span>
+                <span class="mockup-zoom">100%</span>
+                <span class="mockup-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></span>
+              </div>
+              <div class="mockup-spacer"></div>
+              <div class="mockup-toolbar-group">
+                <span class="mockup-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>
+                <span class="mockup-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg></span>
+              </div>
+            </div>
+            <div class="mockup-context" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <span class="mockup-context-name">Quarterly Report.docx</span>
+              <span class="mockup-context-path">C:\Documents\Reports\</span>
+            </div>
+            <div class="mockup-workspace" aria-hidden="true">
+              <div class="mockup-page">
+                <h3>Quarterly Report</h3>
+                <p>Summary of key metrics and findings for Q1 2026.</p>
+                <div class="mock-line"></div>
+                <div class="mock-line"></div>
+                <div class="mock-line short"></div>
+                <div class="mock-table">
+                  <div class="mock-cell"></div>
+                  <div class="mock-cell"></div>
+                  <div class="mock-cell"></div>
+                  <div class="mock-cell"></div>
+                </div>
+              </div>
+            </div>
+            <div class="mockup-status" aria-hidden="true">
+              <span>C:\Documents\Reports\Quarterly Report.docx</span>
+              <span>3 pages · 1,247 words</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features">
+      <div class="container">
+        <div class="section-header">
+          <h2>Everything you need to read .docx files</h2>
+          <p>View-only by design — fast, lightweight, and focused on what matters.</p>
+        </div>
+        <div class="features-grid">
+          <article class="feature-card glass">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            </div>
+            <h3>Open your way</h3>
+            <p>Toolbar button, drag-and-drop, double-click in File Explorer, or pick from the Recent list (up to 10 files).</p>
+          </article>
+          <article class="feature-card glass">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+            </div>
+            <h3>Rich layout rendering</h3>
+            <p>Tables, images, page breaks, headers, and footers — rendered faithfully from your .docx files.</p>
+          </article>
+          <article class="feature-card glass">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            </div>
+            <h3>Zoom &amp; print</h3>
+            <p>Zoom in and out (including fit width), print documents, and export to PDF with selectable text.</p>
+          </article>
+          <article class="feature-card glass">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            </div>
+            <h3>Save as PDF</h3>
+            <p>Vector PDF export with selectable text — no print dialog required. Windows only.</p>
+          </article>
+          <article class="feature-card glass">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <h3>Recent files</h3>
+            <p>Quick access to your last 10 opened documents from the toolbar clock icon.</p>
+          </article>
+          <article class="feature-card glass">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            </div>
+            <h3>Small footprint</h3>
+            <p>Uses the system WebView2 instead of bundling a full browser — installer is only 5–10 MB.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="install">
+      <div class="container">
+        <div class="section-header">
+          <h2>Get started in minutes</h2>
+          <p>Download the latest release and open your first .docx file.</p>
+        </div>
+        <div class="two-col">
+          <article class="card glass">
+            <h3>Install</h3>
+            <ol>
+              <li>Download the latest release from GitHub.</li>
+              <li>Run <strong>*-setup.exe</strong> for a guided installer, or <strong>*.msi</strong> for IT-managed deployment.</li>
+              <li>Open a document via the toolbar, drag-and-drop, double-click in Explorer, or the Recent list.</li>
+            </ol>
+            <div class="callout">
+              <strong>Windows SmartScreen:</strong> The app is not code-signed yet. If Windows shows "Unknown publisher", choose <strong>More info → Run anyway</strong>.
+            </div>
+            <p style="margin-top: var(--space-lg);">
+              <a class="btn btn-primary" href="https://github.com/Maks417/ViewDocx/releases/latest">Download latest release</a>
+            </p>
+          </article>
+          <article class="card glass">
+            <h3>Keyboard shortcuts</h3>
+            <ul class="shortcut-list">
+              <li><span>Open</span> <kbd>Ctrl+O</kbd></li>
+              <li><span>Save as PDF</span> <kbd>Ctrl+Shift+S</kbd></li>
+              <li><span>Print</span> <kbd>Ctrl+P</kbd></li>
+              <li><span>Zoom in</span> <kbd>Ctrl++</kbd></li>
+              <li><span>Zoom out</span> <kbd>Ctrl+-</kbd></li>
+              <li><span>Actual size (100%)</span> <kbd>Ctrl+0</kbd></li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="requirements">
+      <div class="container">
+        <div class="section-header">
+          <h2>Requirements &amp; limitations</h2>
+        </div>
+        <div class="two-col">
+          <article class="card glass">
+            <h3>Requirements</h3>
+            <ul>
+              <li><strong>OS:</strong> Windows 10 or later (64-bit)</li>
+              <li><strong>Runtime:</strong> <a href="https://developer.microsoft.com/microsoft-edge/webview2/">WebView2</a> — included on Windows 11; installed by setup on older systems when needed</li>
+              <li><strong>Formats:</strong> .docx only</li>
+              <li><strong>Internet:</strong> Required once on first install if WebView2 is missing</li>
+            </ul>
+          </article>
+          <article class="card glass">
+            <h3>Limitations</h3>
+            <ul>
+              <li>Legacy .doc files are detected and reported as unsupported</li>
+              <li>Save as PDF is Windows-only (uses WebView2 PrintToPdf)</li>
+              <li>View-only — this is a reader, not a Word replacement</li>
+              <li>macOS and Linux builds are not shipped yet</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="developers" class="dev-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>Open source</h2>
+          <p>Built with Tauri 2, Rust, and TypeScript. Contributions welcome.</p>
+        </div>
+        <div class="dev-badges">
+          <img src="https://img.shields.io/badge/Tauri-2-24C8DB?logo=tauri&logoColor=white" alt="Tauri 2">
+          <img src="https://img.shields.io/badge/Rust-stable-orange?logo=rust&logoColor=white" alt="Rust">
+          <img src="https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white" alt="TypeScript">
+          <img src="https://img.shields.io/badge/Vite-6-646CFF?logo=vite&logoColor=white" alt="Vite">
+          <img src="https://img.shields.io/badge/WebView2-required-0078D4?logo=microsoftedge&logoColor=white" alt="WebView2">
+        </div>
+        <pre style="text-align: left; max-width: 480px; margin: 0 auto; padding: var(--space-lg); border-radius: var(--radius-md); background: var(--control-bg); border: 1px solid var(--border); overflow-x: auto; font-size: 0.875rem;"><code>git clone https://github.com/Maks417/ViewDocx.git
+cd ViewDocx
+npm install
+npm run tauri dev</code></pre>
+        <div class="dev-links">
+          <a class="btn btn-secondary" href="https://github.com/Maks417/ViewDocx">View repository</a>
+          <a class="btn btn-secondary" href="https://github.com/Maks417/ViewDocx/blob/master/README.md">Read full docs</a>
+          <a class="btn btn-secondary" href="https://github.com/Maks417/ViewDocx/blob/master/LICENSE">MIT License</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>ViewDocx — MIT License · Built with <a href="https://v2.tauri.app">Tauri 2</a> and <a href="https://github.com/VolodymyrBaydalka/docxjs">docx-preview</a></p>
+      <p><a href="https://github.com/Maks417/ViewDocx">GitHub</a> · <a href="https://github.com/Maks417/ViewDocx/releases">Releases</a> · <a href="https://github.com/Maks417/ViewDocx/issues">Issues</a></p>
+    </div>
+  </footer>
+</body>
+</html>
