@@ -70,7 +70,7 @@ The installer is about 5–10 MB. On first install it may download the [WebView2
 ![Tauri](https://img.shields.io/badge/Tauri-2-24C8DB?logo=tauri&logoColor=white)
 ![Rust](https://img.shields.io/badge/Rust-stable-orange?logo=rust&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
 ![WebView2](https://img.shields.io/badge/WebView2-required-0078D4?logo=microsoftedge&logoColor=white)
 
 ### Prerequisites

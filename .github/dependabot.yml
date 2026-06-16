@@ -7,10 +7,6 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
-    ignore:
-      # Vite 8 is a major bundler change; stay on Vite 6 until upgraded deliberately.
-      - dependency-name: vite
-        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: cargo
     directory: /src-tauri
