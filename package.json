@@ -14,7 +14,7 @@
     "release:bump": "node scripts/bump-version.mjs"
   },
   "dependencies": {
-    "@tauri-apps/api": "^2.5.0",
+    "@tauri-apps/api": "^2.11.1",
     "@tauri-apps/plugin-dialog": "^2.2.2",
     "docx-preview": "^0.3.5"
   },
