@@ -711,6 +711,36 @@ kbd {
   color: var(--accent);
 }
 
+.footer-author {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.footer-author-name {
+  color: var(--muted);
+}
+
+.footer-icon-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  transition: color 0.15s ease;
+}
+
+.footer-icon-link:hover {
+  color: var(--accent);
+}
+
+.footer-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  display: block;
+}
+
 /* Responsive */
 @media (max-width: 900px) {
   .hero-grid,
