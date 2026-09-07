@@ -711,6 +711,46 @@ kbd {
   color: var(--accent);
 }
 
+.footer-author {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+  margin-bottom: 0;
+}
+
+.footer-author-name {
+  color: var(--muted);
+}
+
+.footer-icon-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.125rem;
+  height: 1.125rem;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.footer-icon-link:hover {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.footer-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  max-width: 1.125rem;
+  max-height: 1.125rem;
+  display: block;
+  flex-shrink: 0;
+}
+
 /* Responsive */
 @media (max-width: 900px) {
   .hero-grid,
