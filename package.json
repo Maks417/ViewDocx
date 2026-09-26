@@ -16,7 +16,7 @@
   "dependencies": {
     "@tauri-apps/api": "^2.11.1",
     "@tauri-apps/plugin-dialog": "^2.7.2",
-    "docx-preview": "^0.4.0"
+    "docx-preview": "^0.4.1"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.11.4",
